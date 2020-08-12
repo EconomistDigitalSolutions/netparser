@@ -49,6 +49,28 @@ export class Matcher {
   }
 
   /**
+   * Query for the given network
+   *
+   * @example
+   * var matcher = new netparser.Matcher();
+   * matcher.add("10.0.0.0/24");
+   * matcher.getNetwork("192.168.5.0"); // returns null
+   *
+   * @param network - An address or subnet
+   *
+   * @returns A Network or null
+   */
+  public getNetwork(network: string) {
+    var net = shared.parseBaseNetwork(network, false, false);
+    if (!net || !net.isValid()) return null;
+    var idx = sort.binarySearchForInsertionIndex(net, this.sorted);
+    if (idx < 0) return null;
+    if (idx < this.sorted.length && this.sorted[idx].contains(net)) return this.sorted[idx];
+    if (idx - 1 >= 0 && this.sorted[idx - 1].contains(net)) return this.sorted[idx - 1];
+    return null;
+  }
+
+  /**
    * Insert the given network into the Matcher
    *
    * @example
